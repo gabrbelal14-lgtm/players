@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Legends Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* === CSS Variables === */
+        :root {
+            --primary-bg: #0b1320;
+            --gradient-bg: linear-gradient(135deg, #050b14 0%, #0d1e36 50%, #17375e 100%);
+            --nav-bg: rgba(11, 19, 32, 0.9);
+            --text-main: #ffffff;
+            --text-muted: #a0aec0;
+            --accent: #3498db;
+            --card-bg: #1a2a40;
+            --transition: all 0.3s ease;
+        }
+
+        /* === Reset & Base Styles === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* === Animations === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+
+        /* === Navigation === */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 400;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .controls input, .controls select {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #2d4a70;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+        }
+
+        .controls input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* === Hero Section === */
+        header {
+            text-align: center;
+            padding: 120px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+        }
+
+        /* === Gallery Grid === */
+        .gallery-container {
+            padding: 20px 5%;
+            min-height: 50vh;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-image {
+            transform: scale(1.1);
+        }
+
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .card-info p {
+            color: var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* === Lightbox / Modal === */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        .lightbox-caption {
+            position: absolute;
+            bottom: 30px;
+            color: white;
+            font-size: 2rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-size: 2.5rem;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            color: var(--accent);
+        }
+
+        /* === Footer === */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: #050b14;
+            margin-top: 50px;
+        }
+
+        .social-icons {
+            margin-bottom: 15px;
+        }
+
+        .social-icons a {
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            color: var(--accent);
+        }
+
+        /* === Responsive Design === */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+            .nav-links {
+                gap: 1rem;
+            }
+            header h1 {
+                font-size: 2.5rem;
+            }
+            .controls {
+                width: 100%;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo"><i class="fa-solid fa-futbol"></i> Legends</a>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Players</a></li>
+            <li><a href="#">Gallery</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search players...">
+            <select id="categoryFilter">
+                <option value="All">All Categories</option>
+                <option value="Icon">Icon</option>
+                <option value="Active">Active</option>
+                <option value="Rising Star">Rising Star</option>
+            </select>
+        </div>
+    </nav>
+
+    <header class="fade-in">
+        <h1>Football Legends Gallery</h1>
+        <p>Explore the Greatest Football Players Through Stunning Images.</p>
+    </header>
+
+    <main class="gallery-container fade-in" style="animation-delay: 0.2s;">
+        <div class="grid" id="galleryGrid">
+            </div>
+    </main>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close-btn" id="closeBtn">&times;</span>
+        <img id="lightboxImg" src="" alt="Full Screen Player">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <footer>
+        <div class="social-icons">
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+        <p>&copy; 2026 Football Legends Gallery. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Data for the players using exactly the filenames provided
+        const players = [
+            { id: 1, name: "Lionel Messi", image: "images/1.jpg", category: "Icon" },
+            { id: 2, name: "Zlatan Ibrahimović", image: "images/2.jpg", category: "Icon" },
+            { id: 3, name: "Ronaldinho", image: "images/3.jpg", category: "Icon" },
+            { id: 4, name: "Lamine Yamal", image: "images/4.jpg", category: "Rising Star" },
+            { id: 5, name: "Neymar Jr.", image: "images/5.jpg", category: "Active" }
+        ];
+
+        const galleryGrid = document.getElementById('galleryGrid');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        
+        // Lightbox elements
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const closeBtn = document.getElementById('closeBtn');
+
+        // Render the grid based on data
+        function renderGallery(data) {
+            galleryGrid.innerHTML = '';
+            
+            if(data.length === 0) {
+                galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">No players found.</p>';
+                return;
+            }
+
+            data.forEach((player, index) => {
+                const card = document.createElement('div');
+                card.className = 'card fade-in';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                card.innerHTML = `
+                    <img src="${player.image}" alt="${player.name}" class="card-image">
+                    <div class="card-info">
+                        <h3>${player.name}</h3>
+                        <p>${player.category}</p>
+                    </div>
+                `;
+
+                // Add click event for Lightbox
+                card.addEventListener('click', () => openLightbox(player.image, player.name));
+
+                galleryGrid.appendChild(card);
+            });
+        }
+
+        // Filtering Logic
+        function filterGallery() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const category = categoryFilter.value;
+
+            const filtered = players.filter(player => {
+                const matchesSearch = player.name.toLowerCase().includes(searchTerm);
+                const matchesCategory = category === 'All' || player.category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            renderGallery(filtered);
+        }
+
+        // Event Listeners for controls
+        searchInput.addEventListener('input', filterGallery);
+        categoryFilter.addEventListener('change', filterGallery);
+
+        // Lightbox Functions
+        function openLightbox(imgSrc, caption) {
+            lightboxImg.src = imgSrc;
+            lightboxCaption.textContent = caption;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+            // Wait for transition before clearing src
+            setTimeout(() => { lightboxImg.src = ''; }, 300);
+        }
+
+        closeBtn.addEventListener('click', closeLightbox);
+        
+        // Close lightbox on clicking outside the image
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // Close lightbox on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key ===
