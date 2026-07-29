@@ -311,8 +311,7 @@
     </header>
 
     <main class="gallery-container fade-in" style="animation-delay: 0.2s;">
-        <div class="grid" id="galleryGrid">
-            </div>
+        <div class="grid" id="galleryGrid"></div>
     </main>
 
     <div class="lightbox" id="lightbox">
@@ -331,25 +330,23 @@
     </footer>
 
     <script>
-        // Data for the players using exactly the filenames provided
-   const players = [
-    { id: 1, name: "Lionel Messi", image: "1.jpg", category: "Icon" },
-    { id: 2, name: "Zlatan Ibrahimović", image: "2.jpg", category: "Icon" },
-    { id: 3, name: "Ronaldinho", image: "3.jpg", category: "Icon" },
-    { id: 4, name: "Lamine Yamal", image: "4.jpg", category: "Rising Star" },
-    { id: 5, name: "Neymar Jr.", image: "5.jpg", category: "Active" }
-];
+        const players = [
+            { id: 1, name: "Lionel Messi", image: "./1.jpg", category: "Icon" },
+            { id: 2, name: "Zlatan Ibrahimović", image: "./2.jpg", category: "Icon" },
+            { id: 3, name: "Ronaldinho", image: "./3.jpg", category: "Icon" },
+            { id: 4, name: "Lamine Yamal", image: "./4.jpg", category: "Rising Star" },
+            { id: 5, name: "Neymar Jr.", image: "./5.jpg", category: "Active" }
+        ];
+
         const galleryGrid = document.getElementById('galleryGrid');
         const searchInput = document.getElementById('searchInput');
         const categoryFilter = document.getElementById('categoryFilter');
         
-        // Lightbox elements
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
         const closeBtn = document.getElementById('closeBtn');
 
-        // Render the grid based on data
         function renderGallery(data) {
             galleryGrid.innerHTML = '';
             
@@ -371,14 +368,11 @@
                     </div>
                 `;
 
-                // Add click event for Lightbox
                 card.addEventListener('click', () => openLightbox(player.image, player.name));
-
                 galleryGrid.appendChild(card);
             });
         }
 
-        // Filtering Logic
         function filterGallery() {
             const searchTerm = searchInput.value.toLowerCase();
             const category = categoryFilter.value;
@@ -392,34 +386,39 @@
             renderGallery(filtered);
         }
 
-        // Event Listeners for controls
         searchInput.addEventListener('input', filterGallery);
         categoryFilter.addEventListener('change', filterGallery);
 
-        // Lightbox Functions
         function openLightbox(imgSrc, caption) {
             lightboxImg.src = imgSrc;
             lightboxCaption.textContent = caption;
             lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         }
 
         function closeLightbox() {
             lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Restore scrolling
-            // Wait for transition before clearing src
+            document.body.style.overflow = 'auto';
             setTimeout(() => { lightboxImg.src = ''; }, 300);
         }
 
         closeBtn.addEventListener('click', closeLightbox);
         
-        // Close lightbox on clicking outside the image
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) {
                 closeLightbox();
             }
         });
 
-        // Close lightbox on ESC key
+        // تم إصلاح الجملة الناقصة هنا
         document.addEventListener('keydown', (e) => {
-            if (e.key ===
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // تشغيل العرض الأولي عند فتح الصفحة
+        renderGallery(players);
+    </script>
+</body>
+</html>
